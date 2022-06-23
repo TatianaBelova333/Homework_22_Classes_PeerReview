@@ -18,6 +18,11 @@ class NotFound(Exception):
     def __init__(self, message=None):
         super().__init__(message)
 
+class MessageError(Exception):
+    """In case not stored title passed"""
+    def __init__(self, message=None):
+        super().__init__(message)
+
 
 class NotEnough(Exception):
     """In case quantity requested in excess of stored quantity"""

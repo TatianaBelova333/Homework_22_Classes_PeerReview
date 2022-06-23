@@ -33,17 +33,29 @@ class Storage(ABC):
             raise NotFound
         if quantity > self._items.get(title):
             raise NotEnough
+
         self._items[title] = self._items.get(title) - quantity
+        if self._items[title] == 0:
+            del self._items[title]
 
     def _get_free_space(self) -> int:
         """Get free space left in storage"""
         taken_space = sum([item for item in self._items.values()])
         return self._capacity - taken_space
 
-    def get_items(self) -> dict:
+    def _get_items(self) -> dict:
         """Return dictionary with stored items"""
         return self._items
 
     def _get_unique_items_count(self) -> int:
         """Return number of unique goods stored"""
         return len([item for item in self._items.keys()])
+
+    def populate(self, goods: list) -> None:
+        """Add items from list"""
+        for item in goods:
+            self.add(*item)
+
+    def items_for_print(self) -> str:
+        """Create message with stored items"""
+        return '\n'.join([f'{value} {key}' for key, value in self._get_items().items()])
