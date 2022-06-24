@@ -1,7 +1,7 @@
 import pytest as pytest
 
 import tests.conftest
-from classes.exceptions import ShopFull, StorageFull, NotFound, NotEnough
+from assets.exceptions import StorageFull, ItemsNotFound
 
 
 class TestShop:
@@ -40,7 +40,7 @@ class TestShopAdd:
     def test_titles_exceeded(self, shop, goods_6):
         for item in goods_6:
             shop.add(*item)
-        raise ShopFull
+        raise StorageFull
 
     @pytest.mark.xfail()
     def test_capacity_exceeded(self, shop, goods_120):
@@ -63,7 +63,7 @@ class TestShopRemove():
             shop.add(*item)
         for item in goods_6:
             shop.remove(*item)
-        raise NotFound
+        raise ItemsNotFound
 
     @pytest.mark.xfail()
     def test_quantity_exceeded(self, shop, goods_2, goods_2_remove):
@@ -71,7 +71,7 @@ class TestShopRemove():
             shop.add(*item)
         for item in goods_2_remove:
             shop.remove(*item)
-        raise NotEnough
+        raise ItemsNotFound
 
 
 class TestShopGetItems():

@@ -1,7 +1,7 @@
 import pytest as pytest
 
 import tests.conftest
-from classes import Request
+from assets import Request
 
 
 class TestRequest:

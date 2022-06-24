@@ -1,5 +1,5 @@
 from .storage import Storage
-from .exceptions import ShopFull
+from .exceptions import StorageFull
 
 
 class Shop(Storage):
@@ -11,10 +11,9 @@ class Shop(Storage):
 
     def add(self, title: str, quantity: int) -> None:
         """Increase quantity of items stored
-
-        :raises StorageFull: if not enough free space
-        :raises ShopFull: if title in excess of 5 already stored is added
+=
+        :raises StorageFull: if title in excess of 5 already stored is added
         """
-        if self._get_unique_items_count() > 5:
-            raise ShopFull
+        if self._get_unique_items_count() >= 5:
+            raise StorageFull('В магазине нельзя хранить более 5 наименований товаров')
         super().add(title, quantity)

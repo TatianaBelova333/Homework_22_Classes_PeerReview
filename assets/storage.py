@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .exceptions import StorageFull, NotFound, NotEnough
+from .exceptions import StorageFull, ItemsNotFound
 
 
 class Storage(ABC):
@@ -20,19 +20,19 @@ class Storage(ABC):
         :raises StorageFull: if not enough free space
         """
         if self._get_free_space() < quantity:
-            raise StorageFull
+            raise StorageFull('Нет свободного места')
         self._items[title] = self._items.get(title, 0) + quantity
 
     def remove(self, title: str, quantity: int) -> None:
         """Decrease quantity of items stored
 
-        :raises NotFound: If no items with the specified title found in storage
-        :raises NotEnough: If quantity requested exceeds quantity stored
+        :raises ItemsNotFound: If no items with the specified title found in storage
+        :raises ItemsNotFound: If quantity requested exceeds quantity stored
         """
         if title not in self._items.keys():
-            raise NotFound
+            raise ItemsNotFound(f'Товар с наименованием {title} не найден')
         if quantity > self._items.get(title):
-            raise NotEnough
+            raise ItemsNotFound(f'Нет нужного количества товара с наименованием {title}')
 
         self._items[title] = self._items.get(title) - quantity
         if self._items[title] == 0:
@@ -43,19 +43,10 @@ class Storage(ABC):
         taken_space = sum([item for item in self._items.values()])
         return self._capacity - taken_space
 
-    def _get_items(self) -> dict:
+    def get_items(self) -> dict:
         """Return dictionary with stored items"""
         return self._items
 
     def _get_unique_items_count(self) -> int:
         """Return number of unique goods stored"""
         return len([item for item in self._items.keys()])
-
-    def populate(self, goods: list) -> None:
-        """Add items from list"""
-        for item in goods:
-            self.add(*item)
-
-    def items_for_print(self) -> str:
-        """Create message with stored items"""
-        return '\n'.join([f'{value} {key}' for key, value in self._get_items().items()])

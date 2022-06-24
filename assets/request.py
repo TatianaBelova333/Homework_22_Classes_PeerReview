@@ -1,4 +1,4 @@
-from classes.exceptions import MessageError
+from .exceptions import MessageError
 
 
 class Request:
@@ -6,6 +6,7 @@ class Request:
 
     def __init__(self, storages: dict, message: str):
         """
+        :param storages: dict with Store and Shop instances
         :param message: message example 'Доставить 3 печеньки из склад в магазин'
         """
 
@@ -21,8 +22,8 @@ class Request:
 
         # Check length
         message = self._message.split(' ')
-        if len(message) <7:
-            raise MessageError
+        if len(message) < 7:
+            raise MessageError('Некорректное сообщение')
 
         # Check fields
         _amount, _product, _from, _to = message[1], message[2], message[4], message[6]
@@ -32,7 +33,7 @@ class Request:
             or _to not in ['склад', 'магазин']
             or not _amount.isdigit()
         ):
-            raise MessageError
+            raise MessageError('Вы ввели некорректное сообщение')
 
         # Create fields
         self._from: str = _from
@@ -40,7 +41,24 @@ class Request:
         self._amount: int = int(_amount)
         self._product: str = _product
 
+    @property
+    def from_(self):
+        return self._from
+
+    @property
+    def to(self):
+        return self._to
+
+    @property
+    def product(self):
+        return self._product
+
+    @property
+    def amount(self):
+        return self._amount
+
     def process(self):
+        """Use Storage methods to manipulate data"""
         self._storages[self._from].remove(self._product, self._amount)
         self._storages[self._to].add(self._product, self._amount)
         return self._storages[self._from], self._storages[self._to]

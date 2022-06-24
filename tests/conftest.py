@@ -1,6 +1,6 @@
 import pytest
 
-from classes import Shop, Store
+from assets import Shop, Store
 
 
 @pytest.fixture()
