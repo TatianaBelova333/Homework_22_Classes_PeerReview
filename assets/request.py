@@ -9,37 +9,23 @@ class Request:
         :param storages: dict with Store and Shop instances
         :param message: message example 'Доставить 3 печеньки из склад в магазин'
         """
+        self._storages = storages
+        self._message = message
 
-        self._storages: dict = storages
-        self._message: str = message
-        self._create_fields_from_message()
+        split_message = Request._split_message(message)
+        self._product: str = split_message['product']
+        self._from: str = split_message['from']
+        self._to: str = split_message['to']
+        self._amount: int = int(split_message['amount'])
 
-    def _create_fields_from_message(self):
-        """Check message and get fields from it
+    @property
+    def message(self):
+        return self._message
 
-        :raises MessageError: if incorrect message passed
-        """
-
-        # Check length
-        message = self._message.split(' ')
-        if len(message) < 7:
-            raise MessageError('Некорректное сообщение')
-
-        # Check fields
-        _amount, _product, _from, _to = message[1], message[2], message[4], message[6]
-
-        if (
-            _from not in ['склад', 'магазин']
-            or _to not in ['склад', 'магазин']
-            or not _amount.isdigit()
-        ):
-            raise MessageError('Вы ввели некорректное сообщение')
-
-        # Create fields
-        self._from: str = _from
-        self._to: str = _to
-        self._amount: int = int(_amount)
-        self._product: str = _product
+    @message.setter
+    def message(self, value: str) -> None:
+        Request._split_message(value)
+        self._message = value
 
     @property
     def from_(self):
@@ -57,7 +43,30 @@ class Request:
     def amount(self):
         return self._amount
 
-    def process(self):
+    @staticmethod
+    def _split_message(message: str) -> dict:
+        """Check message and get fields from it
+
+        :raises MessageError: if incorrect message passed
+        """
+        # Check length
+        message = message.split(' ')
+
+        if len(message) < 7:
+            raise MessageError('Некорректное сообщение')
+
+        # Check fields
+        split_message = {'from': message[4], 'to': message[6], 'amount': message[1], 'product': message[2]}
+        if (
+                split_message['from'] not in ['склад', 'магазин']
+                or split_message['to'] not in ['склад', 'магазин']
+                or not split_message['amount'].isdigit()
+        ):
+            raise MessageError('Вы ввели некорректное сообщение')
+
+        return split_message
+
+    def process(self) -> None:
         """Use Storage methods to manipulate data"""
         self._storages[self._from].remove(self._product, self._amount)
         self._storages[self._to].add(self._product, self._amount)

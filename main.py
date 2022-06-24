@@ -1,4 +1,6 @@
-from utils import Utils
+import sys
+
+from utils import send_request, display_items, create_instances
 
 
 def main():
@@ -9,18 +11,21 @@ def main():
           'Пример: Доставить 2 слон из склад в магазин\n'
           '\nДля остановки программы в любой момент введите "стоп"\n'
           'Для начала работы нажмите Enter')
-    input()
+    user_input = input()
+
+    if user_input == 'стоп':
+        sys.exit()
 
     # Create and populate Shop, Store instances
-    shop, store = Utils.create_instances()
+    shop, store = create_instances()
 
     while True:
         # Display items in store and shop
-        print(Utils.display_items(store=store, shop=shop))
+        print(display_items(store=store, shop=shop))
 
         # Prompt user input and process it
         user_task = input('\nВведите задание: ')
-        print(Utils.send_request(user_task, shop, store))
+        print(send_request(user_task, shop, store))
 
 
 if __name__ == '__main__':
