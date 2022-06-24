@@ -1,5 +1,6 @@
-import sys
+from sys import exit
 
+from assets import goods_shop, goods_store
 from utils import send_request, display_items, create_instances
 
 
@@ -14,10 +15,10 @@ def main():
     user_input = input()
 
     if user_input == 'стоп':
-        sys.exit()
+        exit()
 
     # Create and populate Shop, Store instances
-    shop, store = create_instances()
+    shop, store = create_instances(goods_shop, goods_store)
 
     while True:
         # Display items in store and shop

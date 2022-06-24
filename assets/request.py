@@ -1,3 +1,5 @@
+from typing import Tuple, Any
+
 from .exceptions import MessageError
 
 
@@ -12,11 +14,11 @@ class Request:
         self._storages = storages
         self._message = message
 
-        split_message = Request._split_message(message)
-        self._product: str = split_message['product']
-        self._from: str = split_message['from']
-        self._to: str = split_message['to']
-        self._amount: int = int(split_message['amount'])
+        # split_message = Request._split_message(message)
+        # self._product: str = split_message['product']
+        # # self._from: str = split_message['from']
+        # self._to: str = split_message['to']
+        # self._amount: int = int(split_message['amount'])
 
     @property
     def message(self):
@@ -28,20 +30,21 @@ class Request:
         self._message = value
 
     @property
-    def from_(self):
-        return self._from
+    def from_(self) -> str:
+        # split_message = Request._split_message(self.message)
+        return Request._split_message(self.message)['from']
 
     @property
-    def to(self):
-        return self._to
+    def to(self) -> str:
+        return Request._split_message(self.message)['to']
 
     @property
-    def product(self):
-        return self._product
+    def product(self) -> str:
+        return Request._split_message(self.message)['product']
 
     @property
-    def amount(self):
-        return self._amount
+    def amount(self) -> int:
+        return int(Request._split_message(self.message)['amount'])
 
     @staticmethod
     def _split_message(message: str) -> dict:
@@ -66,11 +69,11 @@ class Request:
 
         return split_message
 
-    def process(self) -> None:
+    def process(self) -> Tuple[Any, Any]:
         """Use Storage methods to manipulate data"""
-        self._storages[self._from].remove(self._product, self._amount)
-        self._storages[self._to].add(self._product, self._amount)
-        return self._storages[self._from], self._storages[self._to]
+        self._storages[self.from_].remove(self.product, self.amount)
+        self._storages[self.to].add(self.product, self.amount)
+        return self._storages[self.from_], self._storages[self.to]
 
     def __repr__(self):
-        return f'from: {self._from}, to: {self._to}, amount: {self._amount}, product: {self._product}'
+        return f'from: {self.from_}, to: {self.to}, amount: {self.amount}, product: {self.product}'
