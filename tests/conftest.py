@@ -1,6 +1,6 @@
 import pytest
 
-from assets import Shop, Store
+from assets import Shop, Storehouse
 
 
 @pytest.fixture()
@@ -10,7 +10,7 @@ def shop():
 
 @pytest.fixture()
 def store():
-    return Store()
+    return Storehouse()
 
 
 @pytest.fixture()

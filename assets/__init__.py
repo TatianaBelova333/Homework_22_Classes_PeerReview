@@ -1,8 +1,8 @@
 from .request import Request
 from .shop import Shop
 from .storage import Storage
-from .store import Store
-from .exceptions import MessageError, StorageFull, ItemsNotFound
+from .storehouse import Storehouse
+from .exceptions import UserRequestError, StorageFull, ItemsNotFound
 from .goods import goods_store, goods_shop
 
 
@@ -10,10 +10,10 @@ __all__ = [
     "Request",
     "Shop",
     "Storage",
-    "Store",
+    "Storehouse",
     "StorageFull",
     "ItemsNotFound",
-    "MessageError",
+    "UserRequestError",
     "goods_store",
     "goods_shop"
 ]

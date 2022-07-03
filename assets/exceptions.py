@@ -15,8 +15,8 @@ class ItemsNotFound(Exception):
         super().__init__(message)
 
 
-class MessageError(Exception):
+class UserRequestError(Exception):
     """If wrong message passed"""
-    def __init__(self, message='Incorrect message'):
+    def __init__(self, message='Incorrect request'):
         self.message = message
         super().__init__(message)

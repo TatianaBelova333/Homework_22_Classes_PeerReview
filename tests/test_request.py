@@ -1,6 +1,4 @@
-import pytest as pytest
 
-import tests.conftest
 from assets import Request
 
 

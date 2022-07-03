@@ -26,7 +26,8 @@ def main():
 
         # Prompt user input and process it
         user_task = input('\nВведите задание: ')
-        print(send_request(user_task, shop, store))
+        # было: print(send_request(user_task, shop, store))
+        send_request(user_task, shop, store)
 
 
 if __name__ == '__main__':

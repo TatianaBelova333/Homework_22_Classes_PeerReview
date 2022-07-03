@@ -1,6 +1,5 @@
 import pytest as pytest
 
-import tests.conftest
 from assets.exceptions import StorageFull, ItemsNotFound
 
 
