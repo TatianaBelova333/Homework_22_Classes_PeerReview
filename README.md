@@ -4,11 +4,7 @@
 
 Было исправлено следующее:
 
-1) **Реализация абстрактного класса Storage(assets.storage.py)**:
-У Кирилла в данном классе только один метод абстрактный метод (__init__).
-Я сделала все методы данного класса абстрактными и убрала бы реализацию методов, чтобы обеспечить единый интейфейс всех наследников.
-
-2) **Имена переменных**. 
+1) **Имена переменных**. 
 - Имя класса Store - на мой взгляд, данное имя не очень подходит для "склада", т.к. означает "магазин".
 Я поменяла на Storehouse.
 
@@ -24,6 +20,100 @@ def remove(self, item: str, quantity: int) -> None:
 - Имя класса исключения MessageError(assets.exceptions.py) заменено на UserRequestError
 - Имя параметра message класса Request заменено на user_request
 
+2) **Реализация абстрактного класса Storage(assets.storage.py)**:
+У Кирилла в данном классе только один метод абстрактный метод (__init__).
+Я сделала все методы данного класса абстрактными и убрала реализацию методов, чтобы обеспечить единый интейфейс всех наследников.
+```python
+# БЫЛО
+from abc import ABC, abstractmethod
+
+from .exceptions import StorageFull, ItemsNotFound
+
+
+class Storage(ABC):
+    """Abstract class"""
+
+    @abstractmethod
+    def __init__(self):
+        self._items: dict[str: int] = {}
+        self._capacity: str = 0
+
+    def __repr__(self):
+        return f'Это Storage типа {self.__class__.__name__} с емкостью {self._capacity}'
+
+    def add(self, title: str, quantity: int) -> None:
+        """Increase quantity of items stored
+
+        :raises StorageFull: if not enough free space
+        """
+        if self._get_free_space() < quantity:
+            raise StorageFull('Нет свободного места')
+        self._items[title] = self._items.get(title, 0) + quantity
+
+    def remove(self, title: str, quantity: int) -> None:
+        """Decrease quantity of items stored
+
+        :raises ItemsNotFound: If no items with the specified title found in storage
+        :raises ItemsNotFound: If quantity requested exceeds quantity stored
+        """
+        if title not in self._items.keys():
+            raise ItemsNotFound(f'Товар с наименованием {title} не найден')
+        if quantity > self._items.get(title):
+            raise ItemsNotFound(f'Нет нужного количества товара с наименованием {title}')
+
+        self._items[title] = self._items.get(title) - quantity
+        if self._items[title] == 0:
+            del self._items[title]
+
+    def _get_free_space(self) -> int:
+        """Get free space left in storage"""
+        taken_space = sum([item for item in self._items.values()])
+        return self._capacity - taken_space
+
+    def get_items(self) -> dict:
+        """Return dictionary with stored items"""
+        return self._items
+
+    def _get_unique_items_count(self) -> int:
+        """Return number of unique goods stored"""
+        return len([item for item in self._items.keys()])
+
+    
+# СТАЛО
+from abc import ABC, abstractmethod
+
+
+class Storage(ABC):
+    """Abstract class"""
+
+    @abstractmethod
+    def __init__(self):
+        self._items: dict[str: int] = {}
+        self._capacity: int = 0
+
+    def __repr__(self):
+        return f'Это Storage типа {self.__class__.__name__} с емкостью {self._capacity}'
+
+    @abstractmethod
+    def add(self, item: str, quantity: int) -> None:
+        pass
+
+    @abstractmethod
+    def remove(self, item: str, quantity: int) -> None:
+        pass
+
+    @abstractmethod
+    def _get_free_space(self) -> int:
+        pass
+
+    @abstractmethod
+    def get_items(self) -> dict:
+        pass
+
+    @abstractmethod
+    def _get_unique_items_count(self) -> int:
+        pass
+```
 3) **Избыточность кода** 
 В некоторых кусках кода можно обойтись без генераторов и сделать код лаконичнее (мои исправления в комментариях к коду ниже)
  ```python
@@ -96,10 +186,10 @@ class Shop(Storehouse):
     def add(self, title: str, quantity: int) -> None:
         """Increase quantity of items stored
 
-        :raises StorageFull: if title in excess of 5 already stored is added
+        :raises StorageFull: if _item_limit exceeded
         """
         if self._get_unique_items_count() >= self._get_item_limit():  # вместо magic number 5
-            raise StorageFull('В магазине нельзя хранить более 5 наименований товаров')
+            raise StorageFull(f'В магазине нельзя хранить более {self._get_item_limit()} наименований товаров')
         return super().add(title, quantity)
         
 ```
@@ -114,13 +204,14 @@ class Shop(Storehouse):
 
 Обнаружен баг - приложение принимает и обрабатывает запрос от пользователя не только в требуемом формате
 ![bug](request_message_bug.png)
-Для проверки входящего запроса от пользователя я использовала регулярное выражение
+Для проверки входящего запроса от пользователя я использовала регулярное выражение.
+Также
 
 ```python
 # БЫЛО: 
 # длинный код
 # длинный код проверки валидности запроса пользователя
-# комментарии
+# много комментариев
 
  from typing import Tuple, Any
 

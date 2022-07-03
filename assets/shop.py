@@ -3,7 +3,7 @@ from .exceptions import StorageFull
 
 
 class Shop(Storehouse):
-    """Shop - any quantity of up to 5 items could be stored within capacity"""
+    """Shop - any quantity of up to _item_limit could be stored within capacity"""
     _item_limit = 5
 
     def __init__(self):
@@ -17,10 +17,10 @@ class Shop(Storehouse):
     def add(self, item: str, quantity: int) -> None:
         """Increase quantity of items stored
 
-        :raises StorageFull: if title in excess of 5 already stored is added
+        :raises StorageFull: if _item_limit exceeded
         """
         if self._get_unique_items_count() >= self._get_item_limit():  # было 5 - magic number
-            raise StorageFull('В магазине нельзя хранить более 5 наименований товаров')
+            raise StorageFull(f'В магазине нельзя хранить более {self._get_item_limit()} наименований товаров')
         return super().add(item, quantity)
 
     def remove(self, item: str, quantity: int) -> None:
